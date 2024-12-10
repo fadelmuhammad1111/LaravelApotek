@@ -1,127 +1,125 @@
 @extends('layout.template')
 
 @section('content')
-    <div id="msg-success"></div>
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
+<div id="msg-success" class="alert alert-success d-none" role="alert"></div>
+
+<table class="table table-hover table-responsive" style="border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+    <thead class="bg-light">
+        <tr>
+            <th class="text-center" style="width: 5%;">No</th>
+            <th>Nama Obat</th>
+            <th class="text-center">Tipe</th>
+            <th class="text-center">Stok</th>
+            <th class="text-center" style="width: 15%;">Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $no = 1; @endphp
+        @foreach ($medicine as $item)
             <tr>
-                <td>No</td>
-                <td>Nama</td>
-                <td>Stock</td>
-                <td class="text-center">Aksi</td>
+                <td class="text-center">{{ $no++ }}</td>
+                <td>{{ $item['name'] }}</td>
+                <td class="text-center">{{ ucfirst($item['type']) }}</td>
+                <td class="text-center {{ $item['stock'] <= 3 ? 'text-danger' : 'text-success' }}">
+                    {{ $item['stock'] }}
+                </td>
+                <td class="text-center">
+                    <button onclick="edit({{ $item['id'] }})" class="btn btn-primary btn-sm" style="border-radius: 20px;">Tambah Stock</button>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @php $no = 1;@endphp
-            @foreach ($medicine as $item)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $item['name'] }}</td>
-                    <td>{{ $item['type'] }}</td>
-                    <td
-                        style="{{ $item['stock'] <= 3 ? 'background: red; color: white;' : 'background: none; color: black;' }}">
-                        {{ $item['stock'] }}</td>
-                    <td class="d-flex justify-content-center">
-                        <div onclick="edit({{ $item['id'] }})" class="btn btn-primary me-3" style="cursor: pointer">Tambah
-                            Stock</div>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+        @endforeach
+    </tbody>
+</table>
 
-    <div class="modal" tabindex="-1" id="edit-stock">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ubah Data Stock</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="POST" id="form-stock">
-                    <div class="modal-body">
-                        <div id="msg"></div>
-                        <input type="hidden" name="id" id="id">
-
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nama Obat:</label>
-                            <input type="text" class="form-control" id="name" name="name" disabled>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="stock" class="form-label">Stock Obat:</label>
-                            <input type="number" class="form-control" id="stock" name="stock">
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
+<!-- Modal for Editing Stock -->
+<div class="modal fade" id="edit-stock" tabindex="-1" aria-labelledby="editStockLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 10px;">
+            <div class="modal-header" style="background-color: #007bff; color: white;">
+                <h5 class="modal-title" id="editStockLabel">Ubah Data Stok</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form method="POST" id="form-stock">
+                <div class="modal-body">
+                    <div id="msg" class="alert d-none"></div>
+                    <input type="hidden" name="id" id="id">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama Obat:</label>
+                        <input type="text" class="form-control" id="name" name="name" disabled style="background-color: #f8f9fa;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stok Obat:</label>
+                        <input type="number" class="form-control" id="stock" name="stock" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    @push('script')
-        <script type="text/javascript">
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
+@push('script')
+<script type="text/javascript">
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-            function edit(id) {
-                var url = "{{ route('medicine.stock.edit', ':id') }}";
-                url = url.replace(':id', id);
+    function edit(id) {
+        var url = "{{ route('medicine.stock.edit', ':id') }}";
+        url = url.replace(':id', id);
 
-                $.ajax({
-                    type: "GET",
-                    url: url,
-                    dataType: 'json',
-                    success: function(res) {
-                        $('#edit-stock').modal('show');
-                        $('#id').val(res.id);
-                        $('#name').val(res.name);
-                        $('#stock').val(res.stock);
-                    }
-                });
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'json',
+            success: function(res) {
+                $('#edit-stock').modal('show');
+                $('#id').val(res.id);
+                $('#name').val(res.name);
+                $('#stock').val(res.stock);
             }
-            // 
-            $('#form-stock').submit(function(e) {
-                e.preventDefault();
+        });
+    }
 
-                var id = $('#id').val();
-                var urlForm = "{{ route('medicine.stock.update', ':id') }}";
-                urlForm = urlForm.replace(':id', id);
+    $('#form-stock').submit(function(e) {
+        e.preventDefault();
 
-                var data = {
-                    stock: $('#stock').val()
-                };
+        var id = $('#id').val();
+        var urlForm = "{{ route('medicine.stock.update', ':id') }}";
+        urlForm = urlForm.replace(':id', id);
 
-                $.ajax({
-                    type: "PATCH",
-                    url: urlForm,
-                    data: data,
-                    cache: false,
-                    success: function(data) {
-                        $("#edit-stock").modal('hide');
-                        sessionStorage.reloadAfterPageLoad = true;
-                        window.location.reload();
-                    },
-                    error: function(data) {
-                        $('#msg').attr("class", "alert alert-danger");
-                        $('#msg').text(data.responseJSON.message);
-                    }
-                });
-            });
+        var data = {
+            stock: $('#stock').val()
+        };
 
-            $(function() {
-                if (sessionStorage.reloadAfterPageLoad) {
-                    $("#msg-success").attr("class", "alert alert-success");
-                    $("#msg-success").text("Berhasil menambahkan data stock!");
-                    sessionStorage.clear();
-                }
-            });
-        </script>
-    @endpush
+        $.ajax({
+            type: "PATCH",
+            url: urlForm,
+            data: data,
+            cache: false,
+            success: function(data) {
+                $("#edit-stock").modal('hide');
+                sessionStorage.reloadAfterPageLoad = true;
+                window.location.reload();
+            },
+            error: function(data) {
+                $('#msg').removeClass('d-none').addClass('alert-danger');
+                $('#msg').text(data.responseJSON.message);
+            }
+        });
+    });
+
+    $(function() {
+        if (sessionStorage.reloadAfterPageLoad) {
+            $("#msg-success").removeClass("d-none").text("Berhasil menambahkan data stok!");
+            sessionStorage.clear();
+        }
+    });
+</script>
+@endpush
 @endsection

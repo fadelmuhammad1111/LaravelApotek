@@ -31,16 +31,35 @@
             <select class="form-select" id="role" name="role">
                 <option selected disabled hidden>Pilih</option>
                 <option value="admin" {{ $users['role'] == 'admin'? 'selected': ''}}>Admin</option>
-                <option value="user" {{ $users['role'] =='user'? 'selected': ''}}>user</option>
+                <option value="user" {{ $users['role'] =='user'? 'selected': ''}}>User</option>
             </select>
         </div>
     </div>
-    {{-- <div class="mb-3 row">
-        <label for="password" class="col-sm-2 col-form-label">Ubah Password:</label>
-        <div class="col-sm-10">
-            <input type="number" class="form-control" id="password" name="password" value="{{ $users['password'] }}">
+    <div class="mb-3 row">
+    <label for="password" class="col-sm-2 col-form-label">Ubah Password:</label>
+    <div class="col-sm-10">
+        <div class="input-group">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Ubah Password">
+            <button class="btn btn-outline-secondary" type="button" id="password-show" onclick="showPassword('password')">
+                <i class="bi bi-eye-slash-fill"></i>
+            </button>
         </div>
-    </div> --}}
+    </div>
+</div>
+
+<script>
+    function showPassword(id) {
+        var x = document.getElementById(id);
+        var button = document.getElementById('password-show');
+        if (x.type === "password") {
+            x.type = "password";
+            button.innerHTML = '<i class="bi bi-eye-fill"></i>';
+        } else {
+            x.type = "text";
+            button.innerHTML = '<i class="bi bi-eye-slash-fill"></i>';
+        }
+    }
+</script>
     <button type="submit" class="btn btn-primary mt-3">Ubah Data</button>
     </form>
     @endsection

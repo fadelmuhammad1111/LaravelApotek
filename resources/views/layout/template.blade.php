@@ -17,10 +17,12 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                @if (Auth::check())
                 <ul class="navbar-nav">
                   <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/">Dashboard</a>
                   </li>
+                  <!-- @if (Auth::user()->role == "admin") -->
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Obat
@@ -31,12 +33,32 @@
                       <li><a class="dropdown-item" href="{{route('medicine.stock')}}">Stok</a></li>
                     </ul>
                   </li>
+                  <a class="nav-link active" aria-current="page" href="/kelola">Kelola Akun</a>
+                </li>
+                <!-- @endif -->
+                @if (Auth::user()->role == "kasir")
+                <li class="nav-item">
+                      <a class="nav-link aria-current="page" href="{{ route('kasir.order.index') }}">Pembelian</a>
+                      </li>
+                @endif
+                      @if (Auth::user()->role == "admin")
+                <li class="nav-item">
+                      <a class="nav-link aria-current="page" href="{{ route('order.riwayat') }}">Riwayat Pembelian</a>
+                </li>
+                @endif
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Pembelian</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/kelola">Kelola Akun</a>
-                  </li>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="nav-link" style="border: none; background: none; cursor: pointer;">Logout</button>
+                    </form>
+                </li>
+                
+                <form class="d-flex"  method="GET">
+                    <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                
+                  @endif
                 </ul>
               </div>
             </div>
